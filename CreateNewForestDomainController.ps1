@@ -14,20 +14,18 @@
 #Get NETBIOS name
 
     $netbiosname = Read-Host "Write your NETBIOS name CONTOSO"
-    $pattern = "^[A-Z]$"
+    $pattern = "^[A-Z]+$"
     if (!($netbiosname -match $pattern))
     {
         Write-Error "Invalid Domain name: $netbiosname"
         Exit 1
     }
 
-#SafeModePassword Generation, because the subject doesnt ask for this as a parameter
-$length = 24  # Specify the length of the password
-$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*_-+=?"  # Set of characters to use
-$password = -join ((1..$length) | ForEach-Object { $chars | Get-Random })
+#SafeModePassword Set, because the subject doesnt ask for this as a parameter
+$password = "Pass42!"
 
 
-Install-ADDSForest -DomainName $domainname -DomainNetbiosName $netbiosname -NoRebootOnCompletion -SafeModeAdministratorPassword (ConvertTo-SecureString -String $password  -AsPlainText -Force)
+Install-ADDSForest -DomainName $domainname -DomainNetbiosName $netbiosname -NoRebootOnCompletion -SafeModeAdministratorPassword (ConvertTo-SecureString -String $password  -AsPlainText -Force) -Force
 
 
-Write-Host "Your safemode password $password `t Keep it safely in case of an emergency" -ForegroundColor Red
+Write-Host "Your safemode password $password `nKeep it safely in case of an emergency" -ForegroundColor Red
