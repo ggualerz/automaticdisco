@@ -1,3 +1,4 @@
+#OK
 #Get Domain name
 $domainname = Read-Host "Write the domain name to join"
 

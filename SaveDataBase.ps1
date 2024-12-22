@@ -1,3 +1,4 @@
+#OK
 #Get CSV PAth
 $CSVPath = Read-Host "CSV Output path and name C:\Users\contoso\export.csv (default is $(Get-Location)\export.csv)"
 #Get Delimiter
@@ -17,7 +18,7 @@ if([string]::IsNullOrEmpty($Properties)){$Properties = "Name"}
 $PropertiesArr = $Properties -split ",\s*"
 
 #Get all Users with the correct arguments
-$Users = Get-ADUser -Filter * -Properties $PropertiesArr
+$Users = Get-ADUser -Filter * -Properties $PropertiesArr 
 #Add a boolean to know if its an user or group
 $Users | Add-Member -MemberType NoteProperty -Name 'IsUser' -Value $true -Force
 
@@ -26,4 +27,4 @@ $Groups = Get-ADGroup -Filter * -Properties $PropertiesArr
 #Add a boolean to know if its an user or group
 $Groups | Add-Member -MemberType NoteProperty -Name 'IsUser' -Value $false -Force
 #Export All AD Users with arguments
-$Users + $Groups | Export-Csv -Path $CSVPath -Delimiter $Delim
+$Users + $Groups | Export-Csv -Path $CSVPath -Delimiter $Delim -NoTypeInformation

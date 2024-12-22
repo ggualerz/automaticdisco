@@ -1,10 +1,10 @@
+#OK
 
-
-#Get CSV PAth
+#Get User Name
 $Name = Read-Host "Name of the user firstname.lastname in lowercase only (default is john.doe)"
-#Get Delimiter
+#Get OU Path
 $OU = Read-Host "Organisation Unit Path to join (default is CN=Users,DC=domain,DC=tld)"
-#Get Properties to fetch
+#Get Group targeted
 $Group = Read-Host "Group to join (Default is none)"
 
 #Apply default values if empty
@@ -26,7 +26,7 @@ $secureString = ConvertTo-SecureString -String $plainText -AsPlainText -Force
 $pattern = "^[a-z]+\.[a-z]+$"
 if (!($Name -match $pattern))
 {
-    Write-Error "Name: $Name"
+    Write-Error "Name: $Name is not valid, should be firstname.lastname"
     Exit 1
 }
 
@@ -39,9 +39,20 @@ $Mail = "$($Name)@$($Domain)"
 
 #Create the user
 New-ADUser -Name $Name -ChangePasswordAtLogon $true -AccountPassword $secureString -UserPrincipalName $Mail -Enabled $true
+
+#If an OU is set, move the user to this OU after creatin
 if (!([string]::IsNullOrEmpty($OU)))
 {
-    Set-ADUser -Identity $Name -Path $OU
+    try {
+        #Confirm the $OU Exist
+        Get-ADOrganizationalUnit $OU
+        #Move it
+        Get-ADUser -Identity $Name | Move-ADObject -TargetPath $OU
+    }
+    catch {
+        #Failute info
+        Write-Error "Cannot move the user $Name to the OU $OU, it gonna stay in the default OU"
+    }
 }
 #Add more properties to the uer
 #Name processing and mail
